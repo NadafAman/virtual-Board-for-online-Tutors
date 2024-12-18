@@ -1,6 +1,5 @@
 import datetime
 import textwrap
-import cvzone
 import cv2
 from cvzone.HandTrackingModule import HandDetector
 import numpy as np
@@ -9,15 +8,19 @@ from PIL import Image
 import streamlit as st
 
 # Page configuration
-st.set_page_config(layout="wide")
-st.title("Virtual Teaching Board")
+st.set_page_config(
+    page_title="Magic Teaching Board 🎨", 
+    page_icon="🚀", 
+    layout="wide", 
+    initial_sidebar_state="collapsed"
+)
 
 # Initialize session state
 if 'initialized' not in st.session_state:
     st.session_state.initialized = True
     st.session_state.output_text = ""
     st.session_state.selected_color = (255, 0, 255)
-    st.session_state.brush_size = 5
+    st.session_state.brush_size = 7
     st.session_state.current_frame = None
     st.session_state.camera_index = 0
     st.session_state.cap = None
@@ -25,25 +28,101 @@ if 'initialized' not in st.session_state:
     st.session_state.response_canvas = None  # For AI response display
 
 # Add custom CSS
+
+
 st.markdown("""
     <style>
+    /* Global Styles */
+    .stApp {
+        background: linear-gradient(135deg, #FFE5B4 0%, #FFFFE0 100%);
+        font-family: 'Comic Neue', cursive, 'Montserrat', sans-serif;
+    }
+
+    /* Vibrant Title Styling */
+    .title {
+        text-align: center;
+        font-size: 3em;
+        font-weight: 900;
+        margin-bottom: 30px;
+        background: linear-gradient(45deg, #FF6B6B 0%, #4ECDC4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.1);
+        letter-spacing: 2px;
+    }
+
+    /* Playful Card Container */
+    .stContainer {
+        background-color: white;
+        border-radius: 20px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+        padding: 25px;
+        margin-bottom: 20px;
+        border: 3px dashed #FFD700;
+        transition: all 0.4s ease;
+    }
+
+    }
+
+    .stButton > button {
+        background: blue;
+        color: white;
+        border: 2px solid white;
+        border-radius: 15px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        padding: 12px 25px;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    }
+
     .answer-text {
-        white-space: pre-wrap;
-        word-wrap: break-word;
+        background: linear-gradient(to right, #FFD700 0%, #FFA500 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 25px;
+        margin: 15px 0;
+        font-size: 18px;
+        line-height: 1.7;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        border: 3px solid white;
+        font-family: 'Comic Neue', cursive;
+    }
+
+    /* Colorful Radio Buttons */
+    .stRadio > div {
+        background-color: #FFFACD;
         padding: 15px;
-        background-color: #f0f2f6;
-        border-radius: 8px;
-        margin: 10px 0;
-        font-size: 16px;
-        line-height: 1.5;
-        border: 1px solid #e0e0e0;
+        border: 2px dashed #FF69B4;
     }
-    .stButton button {
-        width: 100%;
-        margin: 5px 0;
+    .stRadio [data-testid='stRadioButtonContainer'] > div {
+        background-color: white;
+        border-radius: 10px;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
     }
+    .stRadio [data-testid='stRadioButtonContainer'] > div:hover {
+        border-color: #4ECDC4;
+    }
+
+
+
+    /* Camera Frame with Personality */
+    .stImage {
+        box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        transition: all 0.4s ease;
+    }
+
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
 """, unsafe_allow_html=True)
+
+# Stylish title with playful emojis
+st.markdown('<h1 class="title">🎨✨ Magic Teaching Board 🤖🖌️</h1>', unsafe_allow_html=True)
 
 # Camera selection and initialization
 available_cameras = []
@@ -101,7 +180,7 @@ with col1:
     }
     selected_color_name = st.radio("Select Drawing Color", list(color_options.keys()))
     st.session_state.selected_color = color_options[selected_color_name]
-    st.session_state.brush_size = st.slider("Brush Size", 5, 30, 10)
+    st.session_state.brush_size = st.slider("Brush Size", 5, 30, 7)
 
 with col2:
     st.markdown("### AI Response")
