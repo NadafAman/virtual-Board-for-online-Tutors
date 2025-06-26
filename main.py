@@ -214,7 +214,7 @@ with col2:
 
 
 # Initialize AI
-genai.configure(api_key="AIzaSyDXEtcgE5pHEnQZ9_F0s8uDSGlIFravsV4") 
+genai.configure(api_key="GEMINI_API_KEY")   #insert your api for this model 
 model = genai.GenerativeModel('gemini-1.5-flash')
 
 # Initialize hand detector
